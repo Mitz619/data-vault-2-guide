@@ -46,6 +46,17 @@ jobs:
       - name: Verify SVG files are valid XML
         run: |
           sudo apt-get install -y libxml2-utils
+          shopt -s nullglob
           for f in diagrams/*.svg; do
             xmllint --noout "$f" && echo "OK: $f" || exit 1
+          done
+      - name: Verify raster image files are non-empty
+        run: |
+          shopt -s nullglob
+          for f in diagrams/*.png diagrams/*.jpg diagrams/*.jpeg; do
+            if [ ! -s "$f" ]; then
+              echo "ERROR: $f is empty"
+              exit 1
+            fi
+            echo "OK: $f ($(du -h "$f" | cut -f1))"
           done

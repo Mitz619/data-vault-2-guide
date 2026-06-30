@@ -44,6 +44,8 @@ The key architectural principle: **INSERT-ONLY**. Nothing in the Raw Vault is ev
 
 ## Architecture Overview
 
+![Data Vault 2.0 Architecture Layers](./diagrams/dv2_architecture.svg)
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                       SOURCE SYSTEMS                          │
@@ -80,6 +82,8 @@ The key architectural principle: **INSERT-ONLY**. Nothing in the Raw Vault is ev
 ---
 
 ## Entity Types
+
+![Data Vault 2.0 E-Commerce ERD](./diagrams/dv2_ecommerce_erd.png)
 
 ### Hubs
 
@@ -384,7 +388,7 @@ data-vault-2-guide/
 ├── README.md                        ← This file
 ├── diagrams/
 │   ├── dv2_architecture.svg         ← Full layer architecture diagram
-│   ├── dv2_ecommerce_erd.svg        ← E-commerce Raw Vault ERD
+│   ├── dv2_ecommerce_erd.png        ← E-commerce Raw Vault ERD
 │   ├── dv2_pit_bridge.svg           ← PIT and Bridge table diagram
 │   └── dv2_genesys_mapping.svg      ← Genesys API → Vault mapping
 ├── docs/
