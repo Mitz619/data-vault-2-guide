@@ -1,0 +1,51 @@
+name: Validate Repository
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint README and docs
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+          config: |
+            {
+              "MD013": false,
+              "MD033": false,
+              "MD041": false
+            }
+
+  check-sql-syntax:
+    name: Check SQL File Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SQL files exist and are non-empty
+        run: |
+          for f in sql/*.sql; do
+            if [ ! -s "$f" ]; then
+              echo "ERROR: $f is empty"
+              exit 1
+            fi
+            echo "OK: $f ($(wc -l < $f) lines)"
+          done
+
+  check-diagrams:
+    name: Check Diagram Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SVG files are valid XML
+        run: |
+          sudo apt-get install -y libxml2-utils
+          for f in diagrams/*.svg; do
+            xmllint --noout "$f" && echo "OK: $f" || exit 1
+          done
