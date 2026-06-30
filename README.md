@@ -44,7 +44,7 @@ The key architectural principle: **INSERT-ONLY**. Nothing in the Raw Vault is ev
 
 ## Architecture Overview
 
-![Data Vault 2.0 Architecture Layers](./diagrams/dv2_architecture.svg)
+![Data Vault 2.0 Architecture Layers](./diagrams/DV2_Architecture.png)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
