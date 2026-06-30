@@ -75,7 +75,7 @@ Restructure freely — as long as NO historical data and NO audit trail is lost.
 
 Mixing fast-changing and slow-changing attributes in one Satellite wastes storage and slows delta detection:
 
-```
+```text
 ❌ SAT_CUSTOMER_ALL  (one satellite)
    — email changes weekly → new row every week
    — date_of_birth never changes → duplicated in every weekly row

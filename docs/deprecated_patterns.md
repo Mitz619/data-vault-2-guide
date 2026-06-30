@@ -67,7 +67,7 @@ Early versions of Data Vault added a `last_seen_date` column to Hubs and Links t
 
 ## Root Cause: All Three Require Physical Updates
 
-```
+```text
 DV 2.0 is an INSERT-ONLY architecture.
 No row in the Raw Vault is ever physically modified after it is inserted.
 ```

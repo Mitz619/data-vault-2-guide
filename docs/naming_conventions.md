@@ -49,20 +49,20 @@ Consistent naming is **mandatory** for ETL automation. Without it, every Hub, Li
 
 ### Audit Columns (on every table, every row)
 
-```
+```sql
 LOAD_DTS    DATETIME2    -- When the vault received this row
 REC_SRC     VARCHAR(50)  -- Which source system produced it
 ```
 
 ### Satellite-only
 
-```
+```sql
 HASH_DIFF   BINARY(16)   -- Hash of all payload columns for change detection
 ```
 
 ### Multi-Active Satellite
 
-```
+```sql
 <parent>_HK (PK, FK)  -- From parent Hub or Link
 LOAD_DTS    (PK)       -- Load timestamp
 SSQN        (PK)       -- Sub-sequence: natural sub-key from source

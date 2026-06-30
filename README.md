@@ -34,7 +34,7 @@ Data Vault 2.0 (DV 2.0) is a data warehouse modelling methodology designed for *
 
 DV 2.0 is typically used as the **integration and storage layer** (Raw Vault), with Kimball-style star schemas built on top for BI consumption (Information Mart).
 
-```
+```text
 Source Systems  →  Staging  →  Raw Data Vault  →  Business Vault  →  Information Mart  →  BI Tools
 ```
 
@@ -46,7 +46,7 @@ The key architectural principle: **INSERT-ONLY**. Nothing in the Raw Vault is ev
 
 ![Data Vault 2.0 Architecture Layers](./diagrams/DV2_Architecture.png)
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                       SOURCE SYSTEMS                          │
 │          CRM │ ERP │ Order System │ WFM │ Contact Centre      │
@@ -99,6 +99,7 @@ A Hub stores the **unique list of one business key**. It is inserted once when t
 | `REC_SRC` | `VARCHAR(50)` | Which source system provided this key |
 
 **Hub Rules:**
+
 - Must have at least one business key
 - Business key → surrogate is one-to-one
 - Cannot contain multiple independent business keys (each gets its own Hub)
@@ -132,6 +133,7 @@ A Link records the **unique list of relationships** between two or more Hub keys
 | `REC_SRC` | `VARCHAR(50)` | Source system |
 
 **Link Rules:**
+
 - Must contain two or more Hub keys
 - Links are **never temporal** — no begin/end dates (those live in Effectivity Satellites)
 - `LOAD_DTS` is an attribute only — never part of the primary key
@@ -168,6 +170,7 @@ Satellites store **delta-driven descriptive information** — attributes that ch
 | `PHONE_NUMBER` | `VARCHAR(20)` | Descriptive attribute |
 
 **Satellite Rules:**
+
 - Must import exactly one parent Hub or Link key (never two parents)
 - Cannot be snowflaked — attaches directly to its parent only
 - `LOAD_DTS` **is** part of the primary key (unlike Hubs and Links)
@@ -177,7 +180,7 @@ Satellites store **delta-driven descriptive information** — attributes that ch
 
 **Split Satellites by rate of change:**
 
-```
+```text
 SAT_CUSTOMER_PROFILE    ← fast-changing: email, phone, loyalty tier
 SAT_CUSTOMER_ADDRESS    ← slow-changing: suburb, state, postcode
 SAT_CUSTOMER_DEMOGRAPHICS ← very rarely: date of birth, preferred name
@@ -225,6 +228,7 @@ Immutable reference data with no history — calendar, time-of-day, country code
 ### Staging Tables
 
 Two-level:
+
 - **Level 1:** Raw data landed as-is from source (hard rules only — typing, dedup, hash key computation)
 - **Level 2 (optional):** Pre-computed hash keys and load dates, enabling parallel vault loading
 
@@ -313,12 +317,15 @@ Consistent naming enables ETL automation. The convention must be documented for 
 These were used in Data Vault 1.0 and must **never** appear in a DV 2.0 model:
 
 ### ❌ Sequence ID Surrogate Keys
+
 Auto-incrementing integers cannot be loaded in parallel. Replaced by deterministic hash keys.
 
 ### ❌ Satellite Load End-Dates
+
 Storing `load_end_date` required physical `UPDATE` statements on existing rows — not scalable. Use SQL `LEAD()` window functions to compute end-dates at query time, or materialise them in PIT/Bridge tables.
 
 ### ❌ Hub and Link Last-Seen Dates
+
 `last_seen_date` on Hubs/Links required physical `UPDATE` statements. Use Effectivity Satellites to track when keys were active or last observed.
 
 > **Root cause of all three:** they require physical `UPDATE` statements. DV 2.0 is **INSERT-ONLY**. No row in the Raw Vault is ever physically modified after insertion.
@@ -331,7 +338,7 @@ Storing `load_end_date` required physical `UPDATE` statements on existing rows �
 
 A customer places an order for a product via a web channel, paying by card:
 
-```
+```text
 HUB_CUSTOMER  ─────────────┐
 HUB_PRODUCT   ──────────── LNK_ORDER_ITEM ──── SAT_ORDER_ITEM_DETAILS
 HUB_ORDER     ─────────────┘                   SAT_ORDER_STATUS
@@ -351,7 +358,7 @@ HUB_ORDER     ─────────────┘                   SAT_O
 
 A voice call flows IVR → queue → agent:
 
-```
+```text
 HUB_CONVERSATION ─── LNK_CONV_AGENT ─── SAT_AGENT_METRICS
                  ─── LNK_CONV_QUEUE
                  ─── LNK_CONV_FLOW  ─── SAT_FLOW_EXECUTION
@@ -383,14 +390,13 @@ See the [`sql/`](./sql/) directory for:
 
 ## Repository Structure
 
-```
+```text
 data-vault-2-guide/
 ├── README.md                        ← This file
 ├── diagrams/
-│   ├── dv2_architecture.svg         ← Full layer architecture diagram
-│   ├── dv2_ecommerce_erd.png        ← E-commerce Raw Vault ERD
-│   ├── dv2_pit_bridge.svg           ← PIT and Bridge table diagram
-│   └── dv2_genesys_mapping.svg      ← Genesys API → Vault mapping
+│   ├── DV2_Architecture.png         ← Full layer architecture diagram
+│   ├── dv2_architecture.svg         ← Source SVG for the architecture diagram
+│   └── dv2_ecommerce_erd.png        ← E-commerce Raw Vault ERD
 ├── docs/
 │   ├── hub_rules.md                 ← Hub rules 4.0 in full
 │   ├── link_rules.md                ← Link rules 5.0 in full
