@@ -16,12 +16,7 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v16
         with:
           globs: "**/*.md"
-          config: |
-            {
-              "MD013": false,
-              "MD033": false,
-              "MD041": false
-            }
+          config: ".markdownlint-cli2.jsonc"
 
   check-sql-syntax:
     name: Check SQL File Structure
